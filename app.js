@@ -26,6 +26,7 @@ function applyTheme(theme){
   if(theme.bg)    r.setProperty('--bg', theme.bg);
   if(theme.text)  r.setProperty('--text', theme.text);
   if(theme.accent)r.setProperty('--accent', theme.accent);
+  if(theme.accent2) r.setProperty('--accent2', theme.accent2);
   if(theme.font)  document.body.style.setProperty('font-family', theme.font);
 }
 
