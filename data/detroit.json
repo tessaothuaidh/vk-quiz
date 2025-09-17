@@ -176,10 +176,10 @@
     }
   ],
   "results": [
-    { "id": "A", "title": "Ты — Юрис",   "desc": "Холодный ум, план и выдержка.", "imagePortrait16x9": "assets/detroit/res-juris-9x16.jpg" },
-    { "id": "B", "title": "Ты — Лара",    "desc": "Нетраннер, которому подвластны сети.", "imagePortrait16x9": "assets/detroit/res-lara-9x16.jpg" },
-    { "id": "C", "title": "Ты — Файдз",   "desc": "Рок-н-рольная мощь и фронтальный напор.", "imagePortrait16x9": "assets/detroit/res-faydz-9x16.jpg" },
-    { "id": "D", "title": "Ты — Пако",    "desc": "Щит команды: надёжность, ресурсы, прикрытие.", "imagePortrait16x9": "assets/detroit/res-paco-9x16.jpg" },
-    { "id": "E", "title": "Ты — Раттана", "desc": "Скорость, интуиция и дерзкая точность.", "imagePortrait16x9": "assets/detroit/res-rattana-9x16.jpg" }
+    { "id": "A", "title": "Ты — Юрис",   "desc": "Остаться человеком в городе, где люди больше не живут, а существуют — это тоже подвиг.", "imagePortrait16x9": "assets/detroit/res-juris-9x16.jpg" },
+    { "id": "B", "title": "Ты — Лара",    "desc": "Тишина — твой выбор. Меткость — твой язык. И одиночество — твоя броня.", "imagePortrait16x9": "assets/detroit/res-lara-9x16.jpg" },
+    { "id": "C", "title": "Ты — Файдз",   "desc": "Ты не просто играешь музыку — ты ей мстишь.", "imagePortrait16x9": "assets/detroit/res-faydz-9x16.jpg" },
+    { "id": "D", "title": "Ты — Пако",    "desc": "Ты ломаешься на изгибе между «никому не доверяю» и «не оставляй меня».", "imagePortrait16x9": "assets/detroit/res-paco-9x16.jpg" },
+    { "id": "E", "title": "Ты — Раттана", "desc": "Ты ветер. Никто не ловит ветер.", "imagePortrait16x9": "assets/detroit/res-rattana-9x16.jpg" }
   ]
 }
