@@ -4,7 +4,7 @@ const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const qs = new URLSearchParams(location.search);
 
 async function fetchJSON(url){
-  const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now()); // без кеша
+  const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now()); // против кеша
   if(!res.ok) throw new Error('Не найден файл: ' + url);
   return res.json();
 }
@@ -45,7 +45,7 @@ function renderParagraphs(text){
   return text.split(/\n\s*\n/).map(p => h('p', {}, p));
 }
 
-// простая SVG-иконка для магазинов
+// простая SVG-иконка для магазинов (единый символ, кроме Читай-города)
 function brandIcon(brand){
   const svg = (path) => {
     const el = document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -57,13 +57,12 @@ function brandIcon(brand){
   };
   const b = (brand||'').toLowerCase();
 
-  // — Единственное исключение — Читай-город: оставляем фирменную «двойную книжку»
+  // Читай-город — фирменная «двойная книжка»
   if (b.includes('chitai') || b.includes('gorod')) {
     return svg('<path d="M5 6h7v12H5z" fill="currentColor"/><path d="M12 6h7v12h-7z" fill="currentColor" opacity=".3"/>');
   }
 
-  // — Для всех остальных (ЛитРес, АвторТудей, Яндекс Книги и любые другие) —
-  // используем один общий лаконичный «документ» (как сейчас у ЛитРес).
+  // Универсальная иконка «документ/список» — для всех остальных
   return svg('<path d="M4 4h16v16H4z" fill="currentColor" opacity=".15"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h6v2H7z" fill="currentColor"/>');
 }
 
@@ -150,7 +149,38 @@ function startQuiz(cfg){
 
     app.innerHTML = '';
 
-    // Карточка результата — постер + текст
+    // === Поделиться: строим ссылку на share-страницу конкретного результата ===
+    function sharePageUrlFor(resId){
+      // урезаем до папки текущей страницы и добавляем относительный путь
+      const base = location.href.replace(/[^/]+$/, '');
+      return new URL(`share/detroit-${resId}.html`, base).toString();
+    }
+    const sharePage = sharePageUrlFor(res.id);
+    const chitai = "https://www.chitai-gorod.ru/r/JeMOD?erid=2W5zFJWtunQ";
+    const shareText = `${res.title} — мой результат в тесте «Какой ты персонаж Детройта?». Книга: Читай-город → ${chitai}`;
+
+    const shareBlock = h('section', { class:'share' },
+      h('h4', { class:'muted' }, 'Поделиться результатом'),
+      h('div', { class:'share-grid' },
+        h('a', {
+          class:'share-link',
+          href:`https://t.me/share/url?url=${encodeURIComponent(sharePage)}&text=${encodeURIComponent(shareText)}`,
+          target:'_blank', rel:'noopener noreferrer'
+        }, 'Telegram'),
+        h('a', {
+          class:'share-link',
+          href:`https://vk.com/share.php?url=${encodeURIComponent(sharePage)}&title=${encodeURIComponent(res.title)}`,
+          target:'_blank', rel:'noopener noreferrer'
+        }, 'ВКонтакте'),
+        h('a', {
+          class:'share-link',
+          href:`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePage)}`,
+          target:'_blank', rel:'noopener noreferrer'
+        }, 'X (Twitter)')
+      )
+    );
+
+    // Карточка результата — постер + текст + share + магазины
     const card = h('section', { class:'result' },
       res.imagePortrait16x9 ? h('img', { class:'rimg', src: res.imagePortrait16x9, alt: res.title }) : null,
       h('div', { class:'pad' },
@@ -161,8 +191,10 @@ function startQuiz(cfg){
           h('a', { class:'btn', href:'index.html' }, 'В каталог'),
           h('button', { class:'btn secondary', onclick: ()=>location.reload() }, 'Пройти ещё раз')
         ),
-        // === Блок магазинов (если указан в JSON) ===
-        Array.isArray((cfg.stores)) && cfg.stores.length ? h('section', { class:'stores' },
+        // Блок "Поделиться"
+        shareBlock,
+        // Магазины (если есть в JSON)
+        Array.isArray(cfg.stores) && cfg.stores.length ? h('section', { class:'stores' },
           h('h4', { class:'muted' }, 'Где почитать книгу'),
           h('div', { class:'store-grid' },
             ...cfg.stores.map(s =>
