@@ -1,0 +1,15 @@
+```json
+{
+  "tests": [
+    {
+      "slug": "sample",
+      "title": "Какой ты персонаж «Детройта»?",
+      "tag": "Киберпанк",
+      "tile16x9": "/assets/sample/tile-16x9.jpg",
+      "coverFull": "/assets/sample/cover-16x9.jpg",
+      "isActive": true,
+      "theme": { "bg": "#0b0f14", "text": "#e6f0ff", "accent": "#048284", "font": "Georgia, serif" }
+    }
+  ]
+}
+```
