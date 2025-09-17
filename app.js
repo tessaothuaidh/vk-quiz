@@ -100,6 +100,10 @@ function startQuiz(cfg){
           ...answersForThis.map(a =>
             h('button', { class:'answer', onclick: ()=>{ vote(a.key); next(); } }, a.label)
           )
+        ),
+        // Кнопка "В каталог" под ответами слева
+        h('div', { class:'actions actions-left' },
+          h('a', { class:'btn secondary', href:'index.html' }, 'В каталог')
         )
       )
     );
