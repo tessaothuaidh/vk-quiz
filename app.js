@@ -45,7 +45,7 @@ function renderParagraphs(text){
   return text.split(/\n\s*\n/).map(p => h('p', {}, p));
 }
 
-// простые SVG-иконки по бренду
+// простая SVG-иконка для магазинов
 function brandIcon(brand){
   const svg = (path) => {
     const el = document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -56,12 +56,15 @@ function brandIcon(brand){
     return el;
   };
   const b = (brand||'').toLowerCase();
-  if(b.includes('litres')) return svg('<path d="M4 4h16v16H4z" fill="currentColor" opacity=".15"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h6v2H7z" fill="currentColor"/>');
-  if(b.includes('authortoday')) return svg('<path d="M12 3l9 18H3z" fill="currentColor" opacity=".2"/><path d="M12 6l6 12H6z" fill="currentColor"/>');
-  if(b.includes('yandex')) return svg('<circle cx="12" cy="12" r="9" fill="currentColor" opacity=".2"/><path d="M10.5 6h3v12h-3z" fill="currentColor"/><path d="M7 9h10v3H7z" fill="currentColor" opacity=".9"/>');
-  if(b.includes('chitai') || b.includes('gorod')) return svg('<path d="M5 6h7v12H5z" fill="currentColor"/><path d="M12 6h7v12h-7z" fill="currentColor" opacity=".3"/>');
-  // дефолт — книжка
-  return svg('<path d="M4 6h10a3 3 0 013 3v9H7a3 3 0 01-3-3V6z" fill="currentColor" opacity=".25"/><path d="M20 18h-9a3 3 0 01-3-3V6" stroke="currentColor" stroke-width="2" fill="none"/>');
+
+  // — Единственное исключение — Читай-город: оставляем фирменную «двойную книжку»
+  if (b.includes('chitai') || b.includes('gorod')) {
+    return svg('<path d="M5 6h7v12H5z" fill="currentColor"/><path d="M12 6h7v12h-7z" fill="currentColor" opacity=".3"/>');
+  }
+
+  // — Для всех остальных (ЛитРес, АвторТудей, Яндекс Книги и любые другие) —
+  // используем один общий лаконичный «документ» (как сейчас у ЛитРес).
+  return svg('<path d="M4 4h16v16H4z" fill="currentColor" opacity=".15"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h6v2H7z" fill="currentColor"/>');
 }
 
 // ===== index page =====
