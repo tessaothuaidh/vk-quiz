@@ -1,4 +1,3 @@
-```js
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const qs = new URLSearchParams(location.search);
@@ -143,4 +142,3 @@ async function initTest(){
   if(page === 'index') initIndex();
   if(page === 'test') initTest();
 })();
-```
