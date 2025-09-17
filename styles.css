@@ -214,3 +214,40 @@ a.btn:hover, button.btn:hover{
 }
 .cover .img{ border-radius: 16px; }     /* чтобы картинка повторяла скругление */
 .cover .pad{ padding: 16px; }           /* внутренние отступы, как раньше */
+
+/* === Магазины / площадки в конце результата === */
+.stores{ margin-top: 16px; }
+.stores h4{ margin: 4px 0 10px; font-weight: 600; }
+
+.store-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.store-link{
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--text);
+  text-decoration: none;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent),
+                           color-mix(in srgb, var(--accent2) 10%, transparent)) padding-box,
+    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.store-link:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(4,131,132,.22);
+}
+
+.store-link .icon{
+  width: 20px; height: 20px; flex: 0 0 20px;
+  color: #eafff6; opacity: .9;
+}
+.store-link span{
+  font-weight: 600;
+  letter-spacing: .2px;
+}
