@@ -1,0 +1,32 @@
+```json
+{
+  "title": "Какой ты персонаж «Детройта»?",
+  "subtitle": "Ответь на вопросы — узнай своего героя",
+  "coverFull": "/assets/sample/cover-16x9.jpg",
+  "theme": { "bg": "#0b0f14", "text": "#e6f0ff", "accent": "#048284", "font": "Georgia, serif" },
+  "questions": [
+    {
+      "text": "Твой первый шаг в неоновом городе?",
+      "image16x9": "/assets/sample/q1-16x9.jpg",
+      "answers": [
+        { "label": "Договориться тихо", "points": {"Юрис": 2, "Лара": 1} },
+        { "label": "Продавить силой", "points": {"Файдз": 3} }
+      ]
+    },
+    {
+      "text": "Инструмент, который всегда с тобой",
+      "image16x9": "/assets/sample/q2-16x9.jpg",
+      "answers": [
+        { "label": "Шифратор и доступ к сети", "points": {"Лара": 3} },
+        { "label": "Гитара-секира и дробовик", "points": {"Файдз": 2} },
+        { "label": "Холодная логика и план Б", "points": {"Юрис": 2} }
+      ]
+    }
+  ],
+  "results": [
+    { "id": "Юрис", "title": "Ты — Юрис", "desc": "Холодный ум и выдержка.", "imagePortrait16x9": "/assets/sample/res-juris-9x16.jpg" },
+    { "id": "Лара", "title": "Ты — Лара", "desc": "Хакер, которому подвластны сети.", "imagePortrait16x9": "/assets/sample/res-lara-9x16.jpg" },
+    { "id": "Файдз", "title": "Ты — Файдз", "desc": "Рок-н-рольная мощь и харизма.", "imagePortrait16x9": "/assets/sample/res-faydz-9x16.jpg" }
+  ]
+}
+```
