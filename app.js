@@ -151,36 +151,14 @@ function startQuiz(cfg){
 
     // === Поделиться: строим ссылку на share-страницу конкретного результата ===
     function sharePageUrlFor(resId){
-      // урезаем до папки текущей страницы и добавляем относительный путь
-      const base = location.href.replace(/[^/]+$/, '');
+      const base = location.href.replace(/[^/]+$/, ''); // папка test.html
       return new URL(`share/detroit-${resId}.html`, base).toString();
     }
     const sharePage = sharePageUrlFor(res.id);
     const chitai = "https://www.chitai-gorod.ru/r/JeMOD?erid=2W5zFJWtunQ";
     const shareText = `${res.title} — мой результат в тесте «Какой ты персонаж Детройта?». Книга: Читай-город → ${chitai}`;
 
-    const shareBlock = h('section', { class:'share' },
-      h('h4', { class:'muted' }, 'Поделиться результатом'),
-      h('div', { class:'share-grid' },
-        h('a', {
-          class:'share-link',
-          href:`https://t.me/share/url?url=${encodeURIComponent(sharePage)}&text=${encodeURIComponent(shareText)}`,
-          target:'_blank', rel:'noopener noreferrer'
-        }, 'Telegram'),
-        h('a', {
-          class:'share-link',
-          href:`https://vk.com/share.php?url=${encodeURIComponent(sharePage)}&title=${encodeURIComponent(res.title)}`,
-          target:'_blank', rel:'noopener noreferrer'
-        }, 'ВКонтакте'),
-        h('a', {
-          class:'share-link',
-          href:`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePage)}`,
-          target:'_blank', rel:'noopener noreferrer'
-        }, 'X (Twitter)')
-      )
-    );
-
-    // Карточка результата — постер + текст + share + магазины
+    // Карточка результата — постер + текст + магазины (без блока "Поделиться")
     const card = h('section', { class:'result' },
       res.imagePortrait16x9 ? h('img', { class:'rimg', src: res.imagePortrait16x9, alt: res.title }) : null,
       h('div', { class:'pad' },
@@ -191,9 +169,6 @@ function startQuiz(cfg){
           h('a', { class:'btn', href:'index.html' }, 'В каталог'),
           h('button', { class:'btn secondary', onclick: ()=>location.reload() }, 'Пройти ещё раз')
         ),
-        // Блок "Поделиться"
-        shareBlock,
-        // Магазины (если есть в JSON)
         Array.isArray(cfg.stores) && cfg.stores.length ? h('section', { class:'stores' },
           h('h4', { class:'muted' }, 'Где почитать книгу'),
           h('div', { class:'store-grid' },
@@ -214,6 +189,30 @@ function startQuiz(cfg){
       )
     );
     app.append(card);
+
+    // --- Блок "Поделиться" ОТДЕЛЬНОЙ СЕКЦИЕЙ под результатом ---
+    app.append(
+      h('section', { class:'share gframe narrow' },
+        h('h4', { class:'muted' }, 'Поделиться результатом'),
+        h('div', { class:'share-grid' },
+          h('a', {
+            class:'share-link',
+            href:`https://t.me/share/url?url=${encodeURIComponent(sharePage)}&text=${encodeURIComponent(shareText)}`,
+            target:'_blank', rel:'noopener noreferrer'
+          }, 'Telegram'),
+          h('a', {
+            class:'share-link',
+            href:`https://vk.com/share.php?url=${encodeURIComponent(sharePage)}&title=${encodeURIComponent(res.title)}`,
+            target:'_blank', rel:'noopener noreferrer'
+          }, 'ВКонтакте'),
+          h('a', {
+            class:'share-link',
+            href:`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePage)}`,
+            target:'_blank', rel:'noopener noreferrer'
+          }, 'X (Twitter)')
+        )
+      )
+    );
   }
 
   // показываем первый вопрос
