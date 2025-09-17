@@ -1,3 +1,4 @@
+// ===== helpers =====
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const qs = new URLSearchParams(location.search);
@@ -22,19 +23,31 @@ function h(tag, attrs={}, ...children){
 function applyTheme(theme){
   if(!theme) return;
   const r = document.documentElement.style;
-  if(theme.bg) r.setProperty('--bg', theme.bg);
+  if(theme.bg)   r.setProperty('--bg', theme.bg);
   if(theme.text) r.setProperty('--text', theme.text);
   if(theme.accent) r.setProperty('--accent', theme.accent);
   if(theme.font) document.body.style.setProperty('font-family', theme.font);
 }
 
+function shuffleArray(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ===== index page =====
 async function initIndex(){
   const grid = $('#grid');
   try{
     const data = await fetchJSON('data/tests.json');
     const tests = (data?.tests || []).filter(t => t.isActive !== false);
-    if(!tests.length){ grid.append(h('p', {class:'muted'}, 'Пока нет активных тестов.')); return; }
-
+    if(!tests.length){
+      grid.append(h('p', {class:'muted'}, 'Пока нет активных тестов.'));
+      return;
+    }
     for(const t of tests){
       const card = h('a', { class:'card', href:`test.html?test=${encodeURIComponent(t.slug)}` },
         h('img', { class:'thumb', src: t.tile16x9, alt: t.title }),
@@ -51,17 +64,26 @@ async function initIndex(){
   }
 }
 
+// ===== quiz page =====
 function startQuiz(cfg){
   const app = $('#app');
   let i = 0;
-  const scores = {}; // {Юрис: 0, Лара: 0, ...}
 
-  function addPoints(points){
-    for(const [k,v] of Object.entries(points||{})) scores[k] = (scores[k]||0) + Number(v||0);
+  // голоса по категориям (A/B/C/D/E)
+  const votes = {}; // {A: n, B: n, ...}
+
+  function vote(category){
+    if(!category) return;
+    votes[category] = (votes[category] || 0) + 1;
   }
+
+  // Перемешиваем варианты для каждого вопроса ОДИН РАЗ на старте
+  const shuffledAnswers = cfg.questions.map(q => shuffleArray(q.answers));
 
   function renderQuestion(){
     const q = cfg.questions[i];
+    const answersForThis = shuffledAnswers[i];
+
     app.innerHTML = '';
     const block = h('section', { class:'q-block' },
       q.image16x9 ? h('img', { class:'qimg', src:q.image16x9, alt:'' }) : null,
@@ -69,7 +91,9 @@ function startQuiz(cfg){
         h('div', { class:'small muted' }, `Вопрос ${i+1} из ${cfg.questions.length}`),
         h('h3', {}, q.text),
         h('div', { class:'answers' },
-          ...q.answers.map(a => h('button', { class:'answer', onclick: ()=>{ addPoints(a.points); next(); } }, a.label))
+          ...answersForThis.map(a =>
+            h('button', { class:'answer', onclick: ()=>{ vote(a.key); next(); } }, a.label)
+          )
         )
       )
     );
@@ -83,13 +107,13 @@ function startQuiz(cfg){
   }
 
   function finish(){
-    // найти ключ с максимальным количеством баллов
-    let bestKey = null, bestVal = -Infinity;
+    // выбираем результат с максимальным количеством голосов (при ничьей — тот, что раньше в cfg.results)
+    let bestId = null, bestVal = -Infinity;
     for(const r of cfg.results){
-      const val = scores[r.id] || 0;
-      if(val > bestVal){ bestVal = val; bestKey = r.id; }
+      const val = votes[r.id] || 0;
+      if(val > bestVal){ bestVal = val; bestId = r.id; }
     }
-    const res = cfg.results.find(r => r.id === bestKey) || cfg.results[0];
+    const res = cfg.results.find(r => r.id === bestId) || cfg.results[0];
 
     app.innerHTML = '';
     const card = h('section', { class:'result' },
@@ -106,6 +130,7 @@ function startQuiz(cfg){
     app.append(card);
   }
 
+  // старт с экрана обложки уже отрисован в initTest, поэтому показываем первый вопрос
   renderQuestion();
 }
 
@@ -116,6 +141,7 @@ async function initTest(){
   try{
     const cfg = await fetchJSON(`data/${slug}.json`);
     applyTheme(cfg.theme);
+
     // экран стартовой обложки
     app.innerHTML = '';
     const start = h('section', { class:'cover' },
@@ -137,8 +163,9 @@ async function initTest(){
   }
 }
 
+// ===== boot =====
 (function(){
   const page = document.body.getAttribute('data-page');
   if(page === 'index') initIndex();
-  if(page === 'test') initTest();
+  if(page === 'test')  initTest();
 })();
