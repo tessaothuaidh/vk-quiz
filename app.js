@@ -95,9 +95,7 @@ function startQuiz(cfg){
       h('div', { class:'pad' },
         h('div', { class:'small muted' }, `Вопрос ${i+1} из ${cfg.questions.length}`),
         h('h3', {}, q.text),
-        h('h3', {}, q.text),
-q.subtitle ? h('p', {}, h('em', {}, q.subtitle)) : null,
-h('div', { class:'answers' }, ...
+        q.subtitle ? h('p', {}, h('em', {}, q.subtitle)) : null,
         h('div', { class:'answers' },
           ...answersForThis.map(a =>
             h('button', { class:'answer', onclick: ()=>{ vote(a.key); next(); } }, a.label)
@@ -129,9 +127,9 @@ h('div', { class:'answers' }, ...
     const card = h('section', { class:'result' },
       res.imagePortrait16x9 ? h('img', { class:'rimg', src: res.imagePortrait16x9, alt: res.title }) : null,
       h('div', { class:'pad' },
-        h('h3', {}, res.title || 'Результат'),               // заголовок (жирный по умолчанию)
-        res.desc ? h('p', {}, h('em', {}, res.desc)) : null, // подзаголовок курсивом
-        ...renderParagraphs(res.long),                       // развёрнутый текст сразу
+        h('h3', {}, res.title || 'Результат'),
+        res.desc ? h('p', {}, h('em', {}, res.desc)) : null,
+        ...renderParagraphs(res.long),
         h('div', { class:'actions' },
           h('a', { class:'btn', href:'index.html' }, 'В каталог'),
           h('button', { class:'btn secondary', onclick: ()=>location.reload() }, 'Пройти ещё раз')
