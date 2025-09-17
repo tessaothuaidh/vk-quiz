@@ -118,11 +118,55 @@ a:hover{ color:var(--accent2); }
 }
 .q-block .actions-left .btn{ margin-left:0; }
 
-/* ===== Результат ===== */
-.result .rimg{ width:100%; border-radius:16px; }
-.result .pad{ padding:16px; }
-.result h3{ margin:8px 0 6px; }
-.result .actions{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
+/* ===== Результат (полный текст на всех экранах) ===== */
+.result{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:16px;
+  min-height: auto;       /* позволяем странице прокручиваться при длинном тексте */
+  align-content:start;
+}
+.result .rimg{
+  width:100%;
+  aspect-ratio: 2 / 3;    /* строго 1024x1536 пропорция */
+  height:auto;
+  object-fit: cover;
+  border-radius:16px;
+  max-height: 58vh;       /* чтобы на мобильных осталось место для текста */
+}
+.result .pad{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.result h3{ margin:8px 0 2px; }
+.result p em{ opacity:.9; }
+.result .long{
+  display:block;          /* ВСЕГДА полный текст, без line-clamp */
+  overflow:visible;
+}
+.result .actions{
+  margin-top:8px;
+  display:flex; gap:10px; flex-wrap:wrap;
+}
+
+/* Десктоп: две колонки, без обрезки текста */
+@media (min-width: 980px) and (min-height: 720px){
+  .result{
+    grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
+    align-items: start;
+    height: auto;
+  }
+  .result .rimg{
+    max-height: 100%;
+  }
+}
+
+/* Очень низкие экраны: слегка уменьшим типографику */
+@media (max-height: 640px){
+  .result h3{ font-size: clamp(1.05rem, 2.5vh, 1.25rem); }
+  .result .pad{ gap:6px; }
+}
 
 /* ===== Мелочи ===== */
 code{ background:rgba(255,255,255,.08); padding:2px 6px; border-radius:6px; }
