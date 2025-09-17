@@ -58,3 +58,18 @@ header h1 { margin: 0 0 6px; font-size: clamp(24px, 4vw, 36px); }
 
 .center { text-align: center; }
 .small { font-size: 13px; }
+
+/* Кнопка "В каталог" под вопросом — слева */
+.q-block .actions-left {
+  display: flex;           /* на случай, если .actions где-то задаёт другое */
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 12px;        /* отступ сверху от ответов */
+  text-align: left;        /* если .actions где-то центрирует текст */
+  padding-left: 0;         /* выравнивание по левой границе содержимого .pad */
+}
+
+.q-block .actions-left .btn {
+  margin-left: 0;          /* гарантируем отсутствие смещения */
+}
+
