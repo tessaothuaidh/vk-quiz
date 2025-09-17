@@ -3,7 +3,7 @@
     {
       "slug": "sample",
       "title": "Какой ты персонаж «Детройта»?",
-      "tag": "Киберпанк",
+      "tag": "Киберпанк, детектив, боевая фантастика",
       "tile16x9": "assets/sample/tile-16x9.jpg",
       "coverFull": "assets/sample/cover-16x9.jpg",
       "isActive": true,
