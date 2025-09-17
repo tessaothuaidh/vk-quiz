@@ -3,12 +3,12 @@
   "subtitle": "Грязный неон. Пульс улиц. В этом городе выживают только сильные — или безумные. Кто ты в этом мире? Пройди короткий тест и узнай, кто из героев «Детройта» ближе всего тебе по духу.",
   "coverFull": "assets/detroit/cover-16x9.jpg",
   "theme": {
-  "bg": "#002343",
-  "text": "#ffffff",
-  "accent": "#048384",
-  "accent2": "#044a64",
-  "font": "Georgia, serif"
-},
+    "bg": "#002343",
+    "text": "#ffffff",
+    "accent": "#048384",
+    "accent2": "#044a64",
+    "font": "Georgia, serif"
+  },
   "questions": [
     {
       "text": "Что ты сделаешь первым утром после падения системы?",
@@ -24,7 +24,7 @@
     },
     {
       "text": "Какая твоя самая сильная черта?",
-      "subtitle": "В киберпанковом Детройте выживает не тот, кто сильнее, а тот, кто знает себя.",
+      "subtitle": "В киберпанковом Детройте выживает не тот, кто сильнее. А тот, кто знает себя.",
       "image16x9": "assets/detroit/q02-16x9.jpg",
       "answers": [
         { "label": "Забота о других.", "key": "E" },
@@ -226,11 +226,12 @@
       "desc": "Ты ветер. Никто не ловит ветер.",
       "long": "Быстрая, умная, игривая. Ты умеешь быть лёгкой — но за этим стоит выживание. Мир недооценивает тебя, и это тебе на руку. Ты придумываешь правила, ты бежишь первой, ты улыбаешься, когда остальные ещё целятся. Но если что-то угрожает тем, кого ты любишь, то игра заканчивается. Начинается охота.",
       "imagePortrait16x9": "assets/detroit/res-rattana-9x16.jpg"
-    },
-"stores": [
-  { "brand": "litres",       "label": "ЛитРес",        "url": "https://www.litres.ru/series/gorod-mechty-840010/?art_types=text_book" },
-  { "brand": "authortoday",  "label": "АвторТудей",    "url": "https://author.today/work/series/26062" },
-  { "brand": "yandexbook",   "label": "Яндекс Книги",  "url": "https://books.yandex.ru/authors/xVB4eW28" },
-  { "brand": "chitai-gorod", "label": "Читай-город",   "url": "https://www.chitai-gorod.ru/r/JeMOD?erid=2W5zFJWtunQ" }
-]
+    }
+  ],
+  "stores": [
+    { "brand": "litres",       "label": "ЛитРес",        "url": "https://www.litres.ru/series/gorod-mechty-840010/?art_types=text_book" },
+    { "brand": "authortoday",  "label": "АвторТудей",    "url": "https://author.today/work/series/26062" },
+    { "brand": "yandexbook",   "label": "Яндекс Книги",  "url": "https://books.yandex.ru/authors/xVB4eW28" },
+    { "brand": "chitai-gorod", "label": "Читай-город",   "url": "https://www.chitai-gorod.ru/r/JeMOD?erid=2W5zFJWtunQ" }
+  ]
 }
