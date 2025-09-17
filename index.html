@@ -1,8 +1,26 @@
-<!doctype html>
+```html
+<!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Тесты</title></head>
-<body style="font-family:system-ui;padding:24px">
-  <h1>Сайт включён ✅</h1>
-  <p>Дальше добавим шаблон тестов.</p>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Тесты</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+</head>
+<body data-page="index">
+  <header class="wrap">
+    <h1>Тесты ANЯ</h1>
+    <p class="muted">Выбери тест из каталога ниже</p>
+  </header>
+
+  <main class="wrap">
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <footer class="wrap footnote muted">
+    <small>Совет: добавляй новые тесты через файл <code>/data/tests.json</code></small>
+  </footer>
 </body>
 </html>
+```
