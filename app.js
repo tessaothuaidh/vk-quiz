@@ -11,22 +11,22 @@ async function fetchJSON(url){
 
 function h(tag, attrs={}, ...children){
   const el = document.createElement(tag);
-  for(const [k,v] of Object.entries(attrs)){
+  for (const [k,v] of Object.entries(attrs||{})){
     if(k === 'class') el.className = v;
     else if(k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
     else el.setAttribute(k, v);
   }
-  for(const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ''));
+  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ''));
   return el;
 }
 
 function applyTheme(theme){
   if(!theme) return;
   const r = document.documentElement.style;
-  if(theme.bg)   r.setProperty('--bg', theme.bg);
-  if(theme.text) r.setProperty('--text', theme.text);
-  if(theme.accent) r.setProperty('--accent', theme.accent);
-  if(theme.font) document.body.style.setProperty('font-family', theme.font);
+  if(theme.bg)    r.setProperty('--bg', theme.bg);
+  if(theme.text)  r.setProperty('--text', theme.text);
+  if(theme.accent)r.setProperty('--accent', theme.accent);
+  if(theme.font)  document.body.style.setProperty('font-family', theme.font);
 }
 
 function shuffleArray(arr){
@@ -36,6 +36,12 @@ function shuffleArray(arr){
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// превращаем \n\n в абзацы
+function renderParagraphs(text){
+  if(!text) return [];
+  return text.split(/\n\s*\n/).map(p => h('p', {}, p));
 }
 
 // ===== index page =====
@@ -71,7 +77,6 @@ function startQuiz(cfg){
 
   // голоса по категориям (A/B/C/D/E)
   const votes = {}; // {A: n, B: n, ...}
-
   function vote(category){
     if(!category) return;
     votes[category] = (votes[category] || 0) + 1;
@@ -107,7 +112,7 @@ function startQuiz(cfg){
   }
 
   function finish(){
-    // выбираем результат с максимальным количеством голосов (при ничьей — тот, что раньше в cfg.results)
+    // выбираем результат с максимальным количеством голосов (при ничьей — кто раньше в cfg.results)
     let bestId = null, bestVal = -Infinity;
     for(const r of cfg.results){
       const val = votes[r.id] || 0;
@@ -116,11 +121,14 @@ function startQuiz(cfg){
     const res = cfg.results.find(r => r.id === bestId) || cfg.results[0];
 
     app.innerHTML = '';
+
+    // Карточка результата — сразу полностью: заголовок (жирно) + подзаголовок (курсив) + длинный текст
     const card = h('section', { class:'result' },
       res.imagePortrait16x9 ? h('img', { class:'rimg', src: res.imagePortrait16x9, alt: res.title }) : null,
       h('div', { class:'pad' },
-        h('h3', {}, res.title || 'Результат'),
-        res.desc ? h('p', {}, res.desc) : null,
+        h('h3', {}, res.title || 'Результат'),               // заголовок (жирный по умолчанию)
+        res.desc ? h('p', {}, h('em', {}, res.desc)) : null, // подзаголовок курсивом
+        ...renderParagraphs(res.long),                       // развёрнутый текст сразу
         h('div', { class:'actions' },
           h('a', { class:'btn', href:'index.html' }, 'В каталог'),
           h('button', { class:'btn secondary', onclick: ()=>location.reload() }, 'Пройти ещё раз')
@@ -130,7 +138,7 @@ function startQuiz(cfg){
     app.append(card);
   }
 
-  // старт с экрана обложки уже отрисован в initTest, поэтому показываем первый вопрос
+  // показываем первый вопрос
   renderQuestion();
 }
 
