@@ -226,6 +226,11 @@
       "desc": "Ты ветер. Никто не ловит ветер.",
       "long": "Быстрая, умная, игривая. Ты умеешь быть лёгкой — но за этим стоит выживание. Мир недооценивает тебя, и это тебе на руку. Ты придумываешь правила, ты бежишь первой, ты улыбаешься, когда остальные ещё целятся. Но если что-то угрожает тем, кого ты любишь, то игра заканчивается. Начинается охота.",
       "imagePortrait16x9": "assets/detroit/res-rattana-9x16.jpg"
-    }
-  ]
+    },
+"stores": [
+  { "brand": "litres",       "label": "ЛитРес",        "url": "https://www.litres.ru/series/gorod-mechty-840010/?art_types=text_book" },
+  { "brand": "authortoday",  "label": "АвторТудей",    "url": "https://author.today/work/series/26062" },
+  { "brand": "yandexbook",   "label": "Яндекс Книги",  "url": "https://books.yandex.ru/authors/xVB4eW28" },
+  { "brand": "chitai-gorod", "label": "Читай-город",   "url": "https://www.chitai-gorod.ru/r/JeMOD?erid=2W5zFJWtunQ" }
+]
 }
