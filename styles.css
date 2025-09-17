@@ -251,3 +251,26 @@ a.btn:hover, button.btn:hover{
   font-weight: 600;
   letter-spacing: .2px;
 }
+/* === Поделиться (как отдельный блок под результатом) === */
+.share{ margin-top:16px; padding:16px; border-radius:16px; }
+.share h4{ margin:4px 0 10px; font-weight:600; }
+
+.share-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;              /* 5–10px между кнопками — ставим 10 */
+}
+
+.share-link{
+  padding:8px 12px;
+  border-radius:8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color:#fff; font-weight:600; font-size:0.9rem;
+  text-decoration:none;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.share-link:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(4,131,132,.25);
+}
+
