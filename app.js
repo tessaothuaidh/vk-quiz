@@ -57,12 +57,9 @@ function brandIcon(brand){
   };
   const b = (brand||'').toLowerCase();
 
-  // Читай-город — фирменная «двойная книжка»
   if (b.includes('chitai') || b.includes('gorod')) {
     return svg('<path d="M5 6h7v12H5z" fill="currentColor"/><path d="M12 6h7v12h-7z" fill="currentColor" opacity=".3"/>');
   }
-
-  // Универсальная иконка «документ/список» — для всех остальных
   return svg('<path d="M4 4h16v16H4z" fill="currentColor" opacity=".15"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h6v2H7z" fill="currentColor"/>');
 }
 
@@ -97,14 +94,12 @@ function startQuiz(cfg){
   const app = $('#app');
   let i = 0;
 
-  // голоса по категориям (A/B/C/D/E)
-  const votes = {}; // {A: n, B: n, ...}
+  const votes = {};
   function vote(category){
     if(!category) return;
     votes[category] = (votes[category] || 0) + 1;
   }
 
-  // Перемешиваем варианты для каждого вопроса ОДИН РАЗ на старте
   const shuffledAnswers = cfg.questions.map(q => shuffleArray(q.answers));
 
   function renderQuestion(){
@@ -123,7 +118,6 @@ function startQuiz(cfg){
             h('button', { class:'answer', onclick: ()=>{ vote(a.key); next(); } }, a.label)
           )
         ),
-        // Кнопка "В каталог" под ответами слева
         h('div', { class:'actions actions-left' },
           h('a', { class:'btn secondary', href:'index.html' }, 'В каталог')
         )
@@ -139,7 +133,7 @@ function startQuiz(cfg){
   }
 
   function finish(){
-    // выбираем результат с максимальным количеством голосов (при ничьей — кто раньше в cfg.results)
+    // определить победивший результат
     let bestId = null, bestVal = -Infinity;
     for(const r of cfg.results){
       const val = votes[r.id] || 0;
@@ -149,7 +143,7 @@ function startQuiz(cfg){
 
     app.innerHTML = '';
 
-    // === Поделиться: строим ссылку на share-страницу конкретного результата ===
+    // заранее посчитаем данные для "Поделиться"
     function sharePageUrlFor(resId){
       const base = location.href.replace(/[^/]+$/, ''); // папка test.html
       return new URL(`share/detroit-${resId}.html`, base).toString();
@@ -158,7 +152,7 @@ function startQuiz(cfg){
     const chitai = "https://www.chitai-gorod.ru/r/JeMOD?erid=2W5zFJWtunQ";
     const shareText = `${res.title} — мой результат в тесте «Какой ты персонаж Детройта?». Книга: Читай-город → ${chitai}`;
 
-    // Карточка результата — постер + текст + магазины (без блока "Поделиться")
+    // --- Карточка результата (без "Поделиться") ---
     const card = h('section', { class:'result' },
       res.imagePortrait16x9 ? h('img', { class:'rimg', src: res.imagePortrait16x9, alt: res.title }) : null,
       h('div', { class:'pad' },
@@ -190,32 +184,30 @@ function startQuiz(cfg){
     );
     app.append(card);
 
-    // --- Блок "Поделиться" ОТДЕЛЬНОЙ СЕКЦИЕЙ под результатом ---
-    app.append(
-      h('section', { class:'share gframe narrow' },
-        h('h4', { class:'muted' }, 'Поделиться результатом'),
-        h('div', { class:'share-grid' },
-          h('a', {
-            class:'share-link',
-            href:`https://t.me/share/url?url=${encodeURIComponent(sharePage)}&text=${encodeURIComponent(shareText)}`,
-            target:'_blank', rel:'noopener noreferrer'
-          }, 'Telegram'),
-          h('a', {
-            class:'share-link',
-            href:`https://vk.com/share.php?url=${encodeURIComponent(sharePage)}&title=${encodeURIComponent(res.title)}`,
-            target:'_blank', rel:'noopener noreferrer'
-          }, 'ВКонтакте'),
-          h('a', {
-            class:'share-link',
-            href:`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePage)}`,
-            target:'_blank', rel:'noopener noreferrer'
-          }, 'X (Twitter)')
-        )
+    // --- ОТДЕЛЬНАЯ секция "Поделиться" ПОД карточкой результата ---
+    const shareSection = h('section', { class:'share gframe narrow' },
+      h('h4', { class:'muted' }, 'Поделиться результатом'),
+      h('div', { class:'share-grid' },
+        h('a', {
+          class:'share-link',
+          href:`https://t.me/share/url?url=${encodeURIComponent(sharePage)}&text=${encodeURIComponent(shareText)}`,
+          target:'_blank', rel:'noopener noreferrer'
+        }, 'Telegram'),
+        h('a', {
+          class:'share-link',
+          href:`https://vk.com/share.php?url=${encodeURIComponent(sharePage)}&title=${encodeURIComponent(res.title)}`,
+          target:'_blank', rel:'noopener noreferrer'
+        }, 'ВКонтакте'),
+        h('a', {
+          class:'share-link',
+          href:`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePage)}`,
+          target:'_blank', rel:'noopener noreferrer'
+        }, 'X (Twitter)')
       )
     );
+    app.append(shareSection);
   }
 
-  // показываем первый вопрос
   renderQuestion();
 }
 
@@ -227,7 +219,6 @@ async function initTest(){
     const cfg = await fetchJSON(`data/${slug}.json`);
     applyTheme(cfg.theme);
 
-    // экран стартовой обложки
     app.innerHTML = '';
     const start = h('section', { class:'cover' },
       cfg.coverFull ? h('img', { class:'img', src: cfg.coverFull, alt: cfg.title }) : null,
