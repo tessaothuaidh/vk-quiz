@@ -23,11 +23,11 @@ function h(tag, attrs={}, ...children){
 function applyTheme(theme){
   if(!theme) return;
   const r = document.documentElement.style;
-  if(theme.bg)    r.setProperty('--bg', theme.bg);
-  if(theme.text)  r.setProperty('--text', theme.text);
-  if(theme.accent)r.setProperty('--accent', theme.accent);
-  if(theme.accent2) r.setProperty('--accent2', theme.accent2);
-  if(theme.font)  document.body.style.setProperty('font-family', theme.font);
+  if(theme.bg)     r.setProperty('--bg', theme.bg);
+  if(theme.text)   r.setProperty('--text', theme.text);
+  if(theme.accent) r.setProperty('--accent', theme.accent);
+  if(theme.accent2)r.setProperty('--accent2', theme.accent2);
+  if(theme.font)   document.body.style.setProperty('font-family', theme.font);
 }
 
 function shuffleArray(arr){
@@ -43,6 +43,25 @@ function shuffleArray(arr){
 function renderParagraphs(text){
   if(!text) return [];
   return text.split(/\n\s*\n/).map(p => h('p', {}, p));
+}
+
+// простые SVG-иконки по бренду
+function brandIcon(brand){
+  const svg = (path) => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    el.setAttribute('viewBox','0 0 24 24');
+    el.setAttribute('aria-hidden','true');
+    el.classList.add('icon');
+    el.innerHTML = path;
+    return el;
+  };
+  const b = (brand||'').toLowerCase();
+  if(b.includes('litres')) return svg('<path d="M4 4h16v16H4z" fill="currentColor" opacity=".15"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h6v2H7z" fill="currentColor"/>');
+  if(b.includes('authortoday')) return svg('<path d="M12 3l9 18H3z" fill="currentColor" opacity=".2"/><path d="M12 6l6 12H6z" fill="currentColor"/>');
+  if(b.includes('yandex')) return svg('<circle cx="12" cy="12" r="9" fill="currentColor" opacity=".2"/><path d="M10.5 6h3v12h-3z" fill="currentColor"/><path d="M7 9h10v3H7z" fill="currentColor" opacity=".9"/>');
+  if(b.includes('chitai') || b.includes('gorod')) return svg('<path d="M5 6h7v12H5z" fill="currentColor"/><path d="M12 6h7v12h-7z" fill="currentColor" opacity=".3"/>');
+  // дефолт — книжка
+  return svg('<path d="M4 6h10a3 3 0 013 3v9H7a3 3 0 01-3-3V6z" fill="currentColor" opacity=".25"/><path d="M20 18h-9a3 3 0 01-3-3V6" stroke="currentColor" stroke-width="2" fill="none"/>');
 }
 
 // ===== index page =====
@@ -128,17 +147,35 @@ function startQuiz(cfg){
 
     app.innerHTML = '';
 
-    // Карточка результата — сразу полностью: заголовок (жирно) + подзаголовок (курсив) + длинный текст
+    // Карточка результата — постер + текст
     const card = h('section', { class:'result' },
       res.imagePortrait16x9 ? h('img', { class:'rimg', src: res.imagePortrait16x9, alt: res.title }) : null,
       h('div', { class:'pad' },
         h('h3', {}, res.title || 'Результат'),
         res.desc ? h('p', {}, h('em', {}, res.desc)) : null,
-        ...renderParagraphs(res.long),
+        h('div', { class:'long' }, ...renderParagraphs(res.long)),
         h('div', { class:'actions' },
           h('a', { class:'btn', href:'index.html' }, 'В каталог'),
           h('button', { class:'btn secondary', onclick: ()=>location.reload() }, 'Пройти ещё раз')
-        )
+        ),
+        // === Блок магазинов (если указан в JSON) ===
+        Array.isArray((cfg.stores)) && cfg.stores.length ? h('section', { class:'stores' },
+          h('h4', { class:'muted' }, 'Где почитать книгу'),
+          h('div', { class:'store-grid' },
+            ...cfg.stores.map(s =>
+              h('a', {
+                  class:'store-link',
+                  href:s.url,
+                  target:'_blank',
+                  rel:'noopener noreferrer',
+                  title:s.label
+                },
+                brandIcon(s.brand),
+                h('span', {}, s.label)
+              )
+            )
+          )
+        ) : null
       )
     );
     app.append(card);
