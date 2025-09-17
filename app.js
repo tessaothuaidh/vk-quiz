@@ -95,6 +95,9 @@ function startQuiz(cfg){
       h('div', { class:'pad' },
         h('div', { class:'small muted' }, `Вопрос ${i+1} из ${cfg.questions.length}`),
         h('h3', {}, q.text),
+        h('h3', {}, q.text),
+q.subtitle ? h('p', {}, h('em', {}, q.subtitle)) : null,
+h('div', { class:'answers' }, ...
         h('div', { class:'answers' },
           ...answersForThis.map(a =>
             h('button', { class:'answer', onclick: ()=>{ vote(a.key); next(); } }, a.label)
