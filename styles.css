@@ -1,264 +1,201 @@
-/* ===== Глобальные переменные (переопределяются темой через app.js) ===== */
+/* ====== БАЗА / ТЕМА ====== */
 :root{
-  --bg:#002343;
-  --text:#ffffff;
-  --muted: rgba(255,255,255,0.72);
-  --accent:#048384;   /* зелёный акцент */
-  --accent2:#044a64;  /* второй тон для градиента */
+  --bg: #002343;
+  --text: #e6f0ff;
+  --accent: #048384;
+  --accent2: #044a64; /* второй цвет градиента */
 }
 
-/* ===== База ===== */
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
 body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family: Georgia, serif;
-  line-height:1.5;
-}
-img{ max-width:100%; height:auto; display:block; }
-a{ color:var(--accent); text-decoration:none; }
-a:hover{ color:var(--accent2); }
-.muted{ color:var(--muted); }
-.small{ font-size:0.9rem; }
-.wrap{ width:min(1100px, 92%); margin:24px auto; }
-.narrow{ width:min(780px, 92%); margin:24px auto; }
-
-/* ===== Кнопки ===== */
-.btn{
-  display:inline-flex; align-items:center; justify-content:center;
-  padding:10px 14px; font-weight:600; border-radius:12px; cursor:pointer;
-  border:1.5px solid transparent; color:var(--text);
-  background:
-    linear-gradient(#0000,#0000) padding-box,
-    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
-}
-.btn.secondary{
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent),
-                           color-mix(in srgb, var(--accent2) 12%, transparent)) padding-box,
-    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-}
-.btn:hover{
-  transform: translateY(-1px);
-  box-shadow:0 6px 18px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.04) inset;
-}
-
-/* ===== Карточки/рамки с градиентом ===== */
-.gframe,
-.card, .q-block, .result{
-  border:1.5px solid transparent;
-  border-radius:16px;
-  background:
-    linear-gradient(var(--bg), var(--bg)) padding-box,
-    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-  box-shadow:0 8px 24px rgba(4,131,132,0.18);
-}
-
-/* ===== Каталог тестов ===== */
-.grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
-  gap:18px;
-}
-.card{
-  overflow:hidden;
-  transition: transform .15s ease, box-shadow .15s ease;
-  background:
-    linear-gradient(color-mix(in srgb, var(--bg) 90%, black), color-mix(in srgb, var(--bg) 90%, black)) padding-box,
-    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-}
-.card:hover{
-  transform: translateY(-3px);
-  box-shadow:0 12px 28px rgba(4,131,132,0.28);
-}
-.card .thumb{ width:100%; aspect-ratio:16/9; object-fit:cover; }
-.card .body{ padding:14px; }
-.card .title{ margin:0 0 6px 0; font-size:1.05rem; }
-.tag{
-  display:inline-block; padding:2px 8px; border-radius:999px;
-  background: color-mix(in srgb, var(--accent) 25%, transparent);
-  color:#eafff6; font-size:0.85rem;
-}
-
-/* ===== Экран обложки ===== */
-.cover .img{ width:100%; border-radius:16px; }
-.cover .pad{ padding:16px; }
-.cover h2{ margin:.4rem 0 .3rem; }
-.footnote{ margin-top:16px; }
-
-/* ===== Вопросы ===== */
-.q-block .qimg{ width:100%; border-radius:16px; }
-.q-block .pad{ padding:16px 16px 18px; }
-.q-block h3{ margin:8px 0 6px; }
-.answers{
-  display:grid; gap:10px; margin-top:12px;
-}
-.answer{
-  width:100%; text-align:left; font: inherit;
-  padding:12px 14px; border-radius:12px; cursor:pointer;
-  border:1.5px solid transparent; color:var(--text);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent),
-                           color-mix(in srgb, var(--accent2) 8%, transparent)) padding-box,
-    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-  transition:transform .1s ease, box-shadow .1s ease, background .1s ease;
-}
-.answer:hover{
-  transform: translateY(-1px);
-  box-shadow:0 6px 16px rgba(4,131,132,0.25);
-}
-
-/* Кнопка «В каталог» под ответами — слева */
-.q-block .actions-left{
-  display:flex; justify-content:flex-start; align-items:center;
-  margin-top:12px; text-align:left; padding-left:0;
-}
-.q-block .actions-left .btn{ margin-left:0; }
-
-/* ===== Результат (полный текст на всех экранах) ===== */
-.result{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap:16px;
-  min-height: auto;       /* позволяем странице прокручиваться при длинном тексте */
-  align-content:start;
-}
-.result .rimg{
-  width:100%;
-  aspect-ratio: 2 / 3;    /* строго 1024x1536 пропорция */
-  height:auto;
-  object-fit: cover;
-  border-radius:16px;
-  max-height: 58vh;       /* чтобы на мобильных осталось место для текста */
-}
-.result .pad{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-.result h3{ margin:8px 0 2px; }
-.result p em{ opacity:.9; }
-.result .long{
-  display:block;          /* ВСЕГДА полный текст, без line-clamp */
-  overflow:visible;
-}
-.result .actions{
-  margin-top:8px;
-  display:flex; gap:10px; flex-wrap:wrap;
-}
-
-/* Десктоп: две колонки, без обрезки текста */
-@media (min-width: 980px) and (min-height: 720px){
-  .result{
-    grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
-    align-items: start;
-    height: auto;
-  }
-  .result .rimg{
-    max-height: 100%;
-  }
-}
-
-/* Очень низкие экраны: слегка уменьшим типографику */
-@media (max-height: 640px){
-  .result h3{ font-size: clamp(1.05rem, 2.5vh, 1.25rem); }
-  .result .pad{ gap:6px; }
-}
-
-/* ===== Мелочи ===== */
-code{ background:rgba(255,255,255,.08); padding:2px 6px; border-radius:6px; }
-
-/* === 1) Нормализуем стили кнопок для <a> и <button> === */
-a.btn, button.btn{
-  font: inherit;                 /* один и тот же шрифт */
-  line-height: 1.2;
-  min-height: 42px;              /* одинаковая высота */
-  padding: 10px 14px;            /* одинаковые отступы */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  border: 1.5px solid transparent;
-  text-decoration: none;
-  cursor: pointer;
-  -webkit-appearance: none;      /* убираем системные стили кнопок */
-  appearance: none;
+  margin: 0;
+  background: var(--bg);
   color: var(--text);
-  background:
-    linear-gradient(#0000,#0000) padding-box,
-    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  font: 16px/1.55 Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-a.btn.secondary, button.btn.secondary{
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent),
-                           color-mix(in srgb, var(--accent2) 12%, transparent)) padding-box,
-    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-}
-a.btn:hover, button.btn:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.04) inset;
-}
+a{ color: inherit; text-decoration: none; }
+img{ max-width: 100%; height: auto; display: block; }
+h1,h2,h3,h4{ margin: 0 0 .6em; }
+p{ margin: 0 0 1em; }
+.muted{ opacity: .85; }
+.small{ font-size: .9rem; }
 
-/* === 2) Возвращаем градиентную рамку на экран обложки === */
-.cover{
+/* Неоновая «гладкая» рамка */
+.gframe{
   border: 1.5px solid transparent;
   border-radius: 16px;
   background:
     linear-gradient(var(--bg), var(--bg)) padding-box,
     linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-  box-shadow: 0 8px 24px rgba(4,131,132,0.18);
+  box-shadow: 0 8px 24px rgba(4,131,132,.18);
 }
-.cover .img{ border-radius: 16px; }     /* чтобы картинка повторяла скругление */
-.cover .pad{ padding: 16px; }           /* внутренние отступы, как раньше */
+.narrow{ max-width: 1060px; margin: 0 auto; }
 
-/* === Магазины / площадки в конце результата === */
-.stores{ margin-top: 16px; }
-.stores h4{ margin: 4px 0 10px; font-weight: 600; }
+/* Внутренние отступы стандартного блока */
+.pad{ padding: 16px; }
 
-.store-grid{
+/* ====== ШАПКА / КАТАЛОГ ====== */
+.site-header{ max-width: 1060px; margin: 18px auto 10px; padding: 16px; }
+.site-title{ font-size: 2rem; font-weight: 800; }
+
+.grid{
+  max-width: 1060px;
+  margin: 0 auto 40px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+  gap: 16px;
 }
 
-.store-link{
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  color: var(--text);
-  text-decoration: none;
+.card{
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #043049;
   border: 1.5px solid transparent;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent),
-                           color-mix(in srgb, var(--accent2) 10%, transparent)) padding-box,
+    linear-gradient(#043049,#043049) padding-box,
     linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(4,131,132,.22);
+}
+.thumb{ width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.body{ padding: 12px 14px; display: grid; gap: 6px; }
+.title{ font-size: 1.1rem; font-weight: 700; }
+.tag{
+  display: inline-block; padding: 4px 8px; border-radius: 10px;
+  background: rgba(4,131,132,.18);
+}
+
+/* ====== КНОПКИ ====== */
+.btn{
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 14px; border-radius: 12px;
+  border: 1.5px solid transparent;
+  background: linear-gradient(#0000,#0000) padding-box,
+              linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
+  color: #fff; font-weight: 700;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(4,131,132,.25);
+}
+.btn.secondary{
+  background: #0a2e3e; color: var(--text);
+  border-color: rgba(4,131,132,.35);
+}
+.actions{
+  margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px;
+}
+.actions-left{ justify-content: flex-start; }
+
+/* ====== ЭКРАН СТАРТОВОЙ ОБЛОЖКИ ====== */
+.cover{ max-width: 1060px; margin: 18px auto; overflow: hidden; }
+.cover .img{
+  width: 100%; aspect-ratio: 16/9; object-fit: cover;
+  border-radius: 16px;
+}
+.cover .pad{ padding: 16px 4px; }
+
+/* ====== ВОПРОС ====== */
+.q-block{ max-width: 1060px; margin: 18px auto; }
+.qimg{
+  width: 100%; aspect-ratio: 16/9; object-fit: cover;
+  border-radius: 16px; margin-bottom: 12px;
+}
+.answers{
+  display: grid; gap: 10px; margin-top: 8px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 700px){
+  .answers{ grid-template-columns: 1fr 1fr; }
+}
+
+/* ====== РЕЗУЛЬТАТ ====== */
+.result{
+  max-width: 1060px; margin: 18px auto; display: grid; gap: 16px;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;           /* не растягивать по высоте */
+  overflow: visible;
+  border-radius: 16px; padding: 12px;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(#043049,#043049) padding-box,
+    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
+}
+@media (max-width: 860px){
+  .result{ grid-template-columns: 1fr; }
+}
+.result .pad{ padding: 6px 6px 6px 0; }
+@media (max-width: 860px){
+  .result .pad{ padding: 0; }
+}
+
+/* Картинка результата — без обрезки */
+.result .rimg{
+  width: 100%;
+  height: auto;              /* естественная высота по изображению */
+  aspect-ratio: auto;        /* не навязываем 2:3 */
+  object-fit: contain;       /* ВПИСЫВАЕМ, НЕ РЕЖЕМ */
+  max-height: min(78vh, 820px); /* помещаемся в экран WebView */
+  background: #061f2c;       /* «поля» вокруг портрета */
+  border-radius: 12px;
+}
+
+/* Длинный текст результата */
+.long p{ margin: 0 0 12px; }
+
+/* ====== МАГАЗИНЫ ====== */
+.stores{ margin-top: 14px; }
+.store-grid{
+  margin-top: 8px;
+  display: flex; flex-wrap: wrap; gap: 10px;
+}
+.store-link{
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 12px; color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: 1.5px solid transparent;
+  transition: transform .12s ease, box-shadow .12s ease;
 }
 .store-link:hover{
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(4,131,132,.22);
+  box-shadow: 0 8px 18px rgba(4,131,132,.25);
+}
+.icon{ width: 18px; height: 18px; }
+
+/* ====== БЛОК «ПОДЕЛИТЬСЯ» (ОТДЕЛЬНЫЙ, ПОД РЕЗУЛЬТАТОМ) ====== */
+.share{
+  max-width: 1060px; margin: 18px auto 28px;
+  padding: 16px; border-radius: 16px;
+}
+.share h4{ margin: 4px 0 10px; font-weight: 700; }
+.share-grid{
+  display: flex; flex-wrap: wrap; gap: 10px;
+}
+.share-link{
+  padding: 8px 12px; border-radius: 10px; color: #fff; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.share-link:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(4,131,132,.25);
 }
 
-.store-link .icon{
-  width: 20px; height: 20px; flex: 0 0 20px;
-  color: #eafff6; opacity: .9;
+/* ====== ПРОЧЕЕ ====== */
+.gap{ height: 16px; }
+hr{ border: 0; border-top: 1px solid rgba(255,255,255,.12); margin: 16px 0; }
+
+/* Мелкие правки на совсем узких экранах */
+@media (max-width: 420px){
+  .btn{ padding: 9px 12px; border-radius: 10px; }
+  .title{ font-size: 1.05rem; }
 }
-.store-link span{
-  font-weight: 600;
-  letter-spacing: .2px;
-}
-/* === Поделиться (как отдельный блок под результатом) === */
-.share{ margin-top:18px; padding:16px; border-radius:16px; }
-.share h4{ margin:4px 0 10px; font-weight:600; }
-.share-grid{ display:flex; flex-wrap:wrap; gap:10px; }
-.share-link{
-  padding:8px 12px; border-radius:8px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color:#fff; font-weight:600; font-size:.9rem; text-decoration:none;
-  transition:transform .12s ease, box-shadow .12s ease;
-}
-.share-link:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(4,131,132,.25); }
