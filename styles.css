@@ -74,7 +74,10 @@ p{ margin: 0 0 1em; }
 }
 
 /* ====== КНОПКИ ====== */
-.btn{
+/* Общее: ссылки-кнопки и кнопки с классом .btn выглядят одинаково */
+a.btn, button.btn{
+  -webkit-appearance: none;
+  appearance: none;
   display: inline-flex; align-items: center; justify-content: center;
   padding: 10px 14px; border-radius: 12px;
   border: 1.5px solid transparent;
@@ -83,11 +86,11 @@ p{ margin: 0 0 1em; }
   color: #fff; font-weight: 700;
   transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
 }
-.btn:hover{
+a.btn:hover, button.btn:hover{
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(4,131,132,.25);
 }
-.btn.secondary{
+a.btn.secondary, button.btn.secondary{
   background: #0a2e3e; color: var(--text);
   border-color: rgba(4,131,132,.35);
 }
@@ -118,6 +121,52 @@ p{ margin: 0 0 1em; }
   .answers{ grid-template-columns: 1fr 1fr; }
 }
 
+/* Кнопки вариантов ответа — точечный reset для VK WebView */
+button.answer{
+  -webkit-appearance: none;
+  appearance: none;
+}
+.answer{
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+
+  color: var(--text);
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(#0a2e3e, #0a2e3e) padding-box,
+    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
+
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, opacity .12s ease;
+  text-align: left;
+}
+.answer:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(4,131,132,.20);
+  background:
+    linear-gradient(#0d3a4d, #0d3a4d) padding-box,
+    linear-gradient(135deg, var(--accent), var(--accent2)) border-box;
+}
+.answer:active{
+  transform: translateY(0);
+  opacity: .95;
+}
+.answer:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* На очень узких экранах чуть уменьшим паддинги */
+@media (max-width: 420px){
+  .answer{ padding: 10px 12px; border-radius: 10px; }
+}
+
 /* ====== РЕЗУЛЬТАТ ====== */
 .result{
   max-width: 1060px; margin: 18px auto; display: grid; gap: 16px;
@@ -140,12 +189,13 @@ p{ margin: 0 0 1em; }
 
 /* Картинка результата — без обрезки */
 .result .rimg{
+  display: block;
   width: 100%;
-  height: auto;              /* естественная высота по изображению */
-  aspect-ratio: auto;        /* не навязываем 2:3 */
-  object-fit: contain;       /* ВПИСЫВАЕМ, НЕ РЕЖЕМ */
-  max-height: min(78vh, 820px); /* помещаемся в экран WebView */
-  background: #061f2c;       /* «поля» вокруг портрета */
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;                 /* ВПИСЫВАЕМ, НЕ РЕЖЕМ */
+  max-height: min(78vh, 820px);        /* помещаемся в экран WebView */
+  background: #061f2c;                 /* «поля» вокруг портрета */
   border-radius: 12px;
 }
 
@@ -196,22 +246,15 @@ hr{ border: 0; border-top: 1px solid rgba(255,255,255,.12); margin: 16px 0; }
 
 /* Мелкие правки на совсем узких экранах */
 @media (max-width: 420px){
-  .btn{ padding: 9px 12px; border-radius: 10px; }
+  a.btn, button.btn{ padding: 9px 12px; border-radius: 10px; }
   .title{ font-size: 1.05rem; }
 }
 
-/* --- Антикроп результата: приоритетные стили --- */
+/* ====== ХОТФИКСЫ В САМОМ КОНЦЕ ====== */
+/* Антикроп результата — приоритетные значения */
 .result { align-items: start; overflow: visible; }
-
-/* сброс любых старых правил/аспектов */
 .result .rimg{
-  display:block;
-  width:100%;
-  height:auto !important;
-  aspect-ratio:auto !important;
-  object-fit:contain !important;   /* <-- ключ */
-  max-height: min(78vh, 820px);    /* влезает в экран */
-  background:#061f2c;
-  border-radius:12px;
-  /* если где-то стоит overflow у родителей, не даём резать картинку */
+  height: auto !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
 }
