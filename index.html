@@ -1,23 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Миры Тэссы О'Свейт</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="app.js"></script>
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#002343">
 </head>
 <body data-page="index">
-  <header class="wrap">
-    <h1>Миры Тэссы О'Свейт</h1>
+  <header class="site-header gframe">
+    <h1 class="site-title">Тесты</h1>
+    <p class="muted">Выбери тест и начни</p>
   </header>
 
-  <main class="wrap">
-    <div id="grid" class="grid"></div>
-  </main>
+  <main id="grid" class="grid gframe"></main>
 
-  <footer class="wrap footnote muted">
-    <small>Пока здесь только один тест, но список будет пополняться :)</small>
-  </footer>
+  <!-- VK Bridge (мягкая инициализация) -->
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <script>
+    (async () => {
+      if (!window.vkBridge) return;
+      try {
+        await vkBridge.send('VKWebAppInit');
+        vkBridge.subscribe((e) => {
+          if (e.detail?.type === 'VKWebAppUpdateConfig') {
+            // при желании можно реагировать на e.detail.data.scheme
+          }
+        });
+      } catch (err) {
+        console.warn('VKBridge init error:', err);
+      }
+    })();
+  </script>
+
+  <!-- Приложение -->
+  <script defer src="app.js?v=vk1"></script>
 </body>
 </html>
+
