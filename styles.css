@@ -199,3 +199,19 @@ hr{ border: 0; border-top: 1px solid rgba(255,255,255,.12); margin: 16px 0; }
   .btn{ padding: 9px 12px; border-radius: 10px; }
   .title{ font-size: 1.05rem; }
 }
+
+/* --- Антикроп результата: приоритетные стили --- */
+.result { align-items: start; overflow: visible; }
+
+/* сброс любых старых правил/аспектов */
+.result .rimg{
+  display:block;
+  width:100%;
+  height:auto !important;
+  aspect-ratio:auto !important;
+  object-fit:contain !important;   /* <-- ключ */
+  max-height: min(78vh, 820px);    /* влезает в экран */
+  background:#061f2c;
+  border-radius:12px;
+  /* если где-то стоит overflow у родителей, не даём резать картинку */
+}
