@@ -1,13 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Миры Тэссы О'Свейт</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="app.js"></script>
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#002343">
 </head>
 <body data-page="test">
-  <main id="app" class="wrap narrow"></main>
+  <main id="app" class="gframe narrow"></main>
+
+  <!-- VK Bridge (мягкая инициализация) -->
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <script>
+    (async () => {
+      if (!window.vkBridge) return;
+      try {
+        await vkBridge.send('VKWebAppInit');
+        vkBridge.subscribe((e) => {
+          if (e.detail?.type === 'VKWebAppUpdateConfig') {
+            // можно подстроить тему под VK через e.detail.data.scheme
+          }
+        });
+      } catch (err) {
+        console.warn('VKBridge init error:', err);
+      }
+    })();
+  </script>
+
+  <!-- Приложение -->
+  <script defer src="app.js?v=vk1"></script>
 </body>
 </html>
