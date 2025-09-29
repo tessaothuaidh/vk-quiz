@@ -1,7 +1,16 @@
 // ===== helpers =====
-const $ = (s, r=document) => r.querySelector(s);
+const $  = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const qs = new URLSearchParams(location.search);
+
+// --- (опц.) Яндекс.Метрика: если COUNTER_ID определён в окне, отправим goal
+function track(goal, params = {}){
+  try{
+    if (typeof ym === 'function' && typeof window.COUNTER_ID === 'number') {
+      ym(window.COUNTER_ID, 'reachGoal', goal, params);
+    }
+  }catch(e){}
+}
 
 async function fetchJSON(url){
   const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now()); // против кеша
@@ -56,11 +65,42 @@ function brandIcon(brand){
     return el;
   };
   const b = (brand||'').toLowerCase();
-
   if (b.includes('chitai') || b.includes('gorod')) {
     return svg('<path d="M5 6h7v12H5z" fill="currentColor"/><path d="M12 6h7v12h-7z" fill="currentColor" opacity=".3"/>');
   }
   return svg('<path d="M4 4h16v16H4z" fill="currentColor" opacity=".15"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h6v2H7z" fill="currentColor"/>');
+}
+
+/* =======================
+   СЧЁТЧИКИ через Vercel API (GitHub-backed)
+   ======================= */
+
+// 🔧 ПОДСТАВЬТЕ свой домен проекта на Vercel:
+const API_BASE = window.APP_API_BASE || 'https://vk-quiz-api.vercel.app/api';
+
+// Если API_BASE не задан, функции вернут 0/ничего — сайт не сломается
+async function countGet(key){
+  try{
+    if(!API_BASE) return 0;
+    const [slug, part] = key.split('_');
+    const r = await fetch(`${API_BASE}/stats?slug=${encodeURIComponent(slug)}`, { cache:'no-store' });
+    if(!r.ok) return 0;
+    const j = await r.json();
+    return Number(j?.[part] ?? 0);
+  }catch{ return 0; }
+}
+async function countHit(key){
+  try{
+    if(!API_BASE) return 0;
+    const [slug, part] = key.split('_');
+    const r = await fetch(`${API_BASE}/hit`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ slug, key: part })
+    });
+    const j = await r.json().catch(()=>({}));
+    return Number(j?.value ?? 0);
+  }catch{ return 0; }
 }
 
 // ===== index page =====
@@ -94,12 +134,13 @@ function startQuiz(cfg){
   const app = $('#app');
   let i = 0;
 
-  const votes = {};
+  const votes = {}; // {A:n, B:n, ...}
   function vote(category){
     if(!category) return;
     votes[category] = (votes[category] || 0) + 1;
   }
 
+  // Перемешиваем варианты для каждого вопроса ОДИН РАЗ на старте
   const shuffledAnswers = cfg.questions.map(q => shuffleArray(q.answers));
 
   function renderQuestion(){
@@ -118,6 +159,7 @@ function startQuiz(cfg){
             h('button', { class:'answer', onclick: ()=>{ vote(a.key); next(); } }, a.label)
           )
         ),
+        // Кнопка "В каталог" под ответами слева
         h('div', { class:'actions actions-left' },
           h('a', { class:'btn secondary', href:'index.html' }, 'В каталог')
         )
@@ -132,8 +174,8 @@ function startQuiz(cfg){
     else finish();
   }
 
-  function finish(){
-    // определить победивший результат
+  async function finish(){
+    // выбираем результат с максимальным количеством голосов
     let bestId = null, bestVal = -Infinity;
     for(const r of cfg.results){
       const val = votes[r.id] || 0;
@@ -141,12 +183,22 @@ function startQuiz(cfg){
     }
     const res = cfg.results.find(r => r.id === bestId) || cfg.results[0];
 
-    app.innerHTML = '';
+    // инкремент счётчиков (общий и по персонажу)
+    const testKey = (qs.get('test') || 'unknown');
+    countHit(`${testKey}_total`);
+    countHit(`${testKey}_${res.id}`);
+
+    // (опц.) Метрика
+    track('result_view', { test:testKey, result_id: res.id, result_title: res.title||'' });
+
+    const appEl = $('#app');
+    appEl.innerHTML = '';
 
     // заранее посчитаем данные для "Поделиться"
+    const slug = qs.get('test') || 'detroit';
     function sharePageUrlFor(resId){
       const base = location.href.replace(/[^/]+$/, ''); // папка test.html
-      return new URL(`share/detroit-${resId}.html`, base).toString();
+      return new URL(`share/${slug}-${resId}.html`, base).toString();
     }
     const sharePage = sharePageUrlFor(res.id);
     const chitai = "https://www.chitai-gorod.ru/r/JeMOD?erid=2W5zFJWtunQ";
@@ -154,7 +206,13 @@ function startQuiz(cfg){
 
     // --- Карточка результата (без "Поделиться") ---
     const card = h('section', { class:'result' },
-      res.imagePortrait16x9 ? h('img', { class:'rimg', src: res.imagePortrait16x9, alt: res.title }) : null,
+      res.imagePortrait16x9 ? h('img', {
+        class:'rimg',
+        src: res.imagePortrait16x9,
+        alt: res.title,
+        // анти-кроп инлайн (на случай кэша в WebView)
+        style: 'object-fit:contain;height:auto;aspect-ratio:auto;max-height:78vh;background:#061f2c;border-radius:12px'
+      }) : null,
       h('div', { class:'pad' },
         h('h3', {}, res.title || 'Результат'),
         res.desc ? h('p', {}, h('em', {}, res.desc)) : null,
@@ -172,7 +230,10 @@ function startQuiz(cfg){
                   href:s.url,
                   target:'_blank',
                   rel:'noopener noreferrer',
-                  title:s.label
+                  title:s.label,
+                  onclick: () => track('click_store', {
+                    test:testKey, result_id: res.id, brand: s.brand || s.label || ''
+                  })
                 },
                 brandIcon(s.brand),
                 h('span', {}, s.label)
@@ -182,7 +243,7 @@ function startQuiz(cfg){
         ) : null
       )
     );
-    app.append(card);
+    appEl.append(card);
 
     // --- ОТДЕЛЬНАЯ секция "Поделиться" ПОД карточкой результата ---
     const shareSection = h('section', { class:'share gframe narrow' },
@@ -191,26 +252,31 @@ function startQuiz(cfg){
         h('a', {
           class:'share-link',
           href:`https://t.me/share/url?url=${encodeURIComponent(sharePage)}&text=${encodeURIComponent(shareText)}`,
-          target:'_blank', rel:'noopener noreferrer'
+          target:'_blank', rel:'noopener noreferrer',
+          onclick: () => track('share', { test:testKey, result_id: res.id, network: 'telegram' })
         }, 'Telegram'),
         h('a', {
           class:'share-link',
           href:`https://vk.com/share.php?url=${encodeURIComponent(sharePage)}&title=${encodeURIComponent(res.title)}`,
-          target:'_blank', rel:'noopener noreferrer'
+          target:'_blank', rel:'noopener noreferrer',
+          onclick: () => track('share', { test:testKey, result_id: res.id, network: 'vk' })
         }, 'ВКонтакте'),
         h('a', {
           class:'share-link',
           href:`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePage)}`,
-          target:'_blank', rel:'noopener noreferrer'
+          target:'_blank', rel:'noopener noreferrer',
+          onclick: () => track('share', { test:testKey, result_id: res.id, network: 'x' })
         }, 'X (Twitter)')
       )
     );
-    app.append(shareSection);
+    appEl.append(shareSection);
   }
 
+  // показываем первый вопрос
   renderQuestion();
 }
 
+// ===== стартовая страница теста + счётчики =====
 async function initTest(){
   const app = $('#app');
   const slug = qs.get('test');
@@ -220,6 +286,10 @@ async function initTest(){
     applyTheme(cfg.theme);
 
     app.innerHTML = '';
+
+    // место под строку статистики
+    const infoCounts = h('div', { class:'small muted', id:'stats-line' }, '');
+
     const start = h('section', { class:'cover' },
       cfg.coverFull ? h('img', { class:'img', src: cfg.coverFull, alt: cfg.title }) : null,
       h('div', { class:'pad' },
@@ -229,10 +299,32 @@ async function initTest(){
           h('button', { class:'btn', onclick: ()=> startQuiz(cfg) }, 'Начать'),
           h('a', { class:'btn secondary', href:'index.html' }, 'Назад')
         ),
-        h('div', { class:'small muted' }, 'Результат покажем только в конце')
+        h('div', { class:'small muted' }, 'Результат покажем только в конце'),
+        infoCounts
       )
     );
     app.append(start);
+
+    // Запрашиваем текущие значения счётчиков и выводим
+    (async ()=>{
+      try{
+        const total = await countGet(`${slug}_total`);
+        const [A,B,C,D,E] = await Promise.all([
+          countGet(`${slug}_A`), // Юрис
+          countGet(`${slug}_B`), // Лара
+          countGet(`${slug}_C`), // Файдз
+          countGet(`${slug}_D`), // Пако
+          countGet(`${slug}_E`)  // Раттана
+        ]);
+        const n = (x)=> (typeof x==='number' ? x : 0);
+        infoCounts.textContent =
+          `Тест прошли: ${n(total)} раз. ` +
+          `Из них: Юрис ${n(A)}, Лара ${n(B)}, Файдз ${n(C)}, Раттана ${n(E)}, Пако ${n(D)}.`;
+      }catch{
+        infoCounts.style.display='none';
+      }
+    })();
+
   }catch(e){
     app.innerHTML = '<p>Не удалось загрузить тест. Проверь ссылку и файл JSON.</p>';
     console.error(e);
