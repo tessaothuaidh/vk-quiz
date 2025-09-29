@@ -3,15 +3,6 @@ const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const qs = new URLSearchParams(location.search);
 
-// --- analytics helper (если подключена Я.Метрика; иначе тихо пропустит) ---
-function track(goal, params = {}){
-  try{
-    if (typeof ym === 'function') {
-      ym(COUNTER_ID, 'reachGoal', goal, params);
-    }
-  }catch(e){}
-}
-
 async function fetchJSON(url){
   const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now()); // против кеша
   if(!res.ok) throw new Error('Не найден файл: ' + url);
@@ -72,31 +63,6 @@ function brandIcon(brand){
   return svg('<path d="M4 4h16v16H4z" fill="currentColor" opacity=".15"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h6v2H7z" fill="currentColor"/>');
 }
 
-/* =======================
-   GLOBAL COUNTS via CountAPI
-   ======================= */
-const COUNT_NS = 'tessaothuaidh_vk_quiz';   // пространство имён проекта
-
-function countUrl(kind, key){
-  return `https://api.countapi.xyz/${kind}/${COUNT_NS}/${encodeURIComponent(key)}`;
-}
-async function countGet(key){
-  try{
-    const r = await fetch(countUrl('get', key));
-    if(!r.ok) return 0;
-    const j = await r.json();
-    return typeof j.value === 'number' ? j.value : 0;
-  }catch(e){ return 0; }
-}
-async function countHit(key){
-  try{
-    const r = await fetch(countUrl('hit', key), { cache:'no-store' });
-    if(!r.ok) return 0;
-    const j = await r.json();
-    return typeof j.value === 'number' ? j.value : 0;
-  }catch(e){ return 0; }
-}
-
 // ===== index page =====
 async function initIndex(){
   const grid = $('#grid');
@@ -128,13 +94,12 @@ function startQuiz(cfg){
   const app = $('#app');
   let i = 0;
 
-  const votes = {}; // {A:n, B:n, ...}
+  const votes = {};
   function vote(category){
     if(!category) return;
     votes[category] = (votes[category] || 0) + 1;
   }
 
-  // Перемешиваем варианты для каждого вопроса ОДИН РАЗ на старте
   const shuffledAnswers = cfg.questions.map(q => shuffleArray(q.answers));
 
   function renderQuestion(){
@@ -153,7 +118,6 @@ function startQuiz(cfg){
             h('button', { class:'answer', onclick: ()=>{ vote(a.key); next(); } }, a.label)
           )
         ),
-        // Кнопка "В каталог" под ответами слева
         h('div', { class:'actions actions-left' },
           h('a', { class:'btn secondary', href:'index.html' }, 'В каталог')
         )
@@ -168,8 +132,8 @@ function startQuiz(cfg){
     else finish();
   }
 
-  async function finish(){
-    // выбираем результат с максимальным количеством голосов
+  function finish(){
+    // определить победивший результат
     let bestId = null, bestVal = -Infinity;
     for(const r of cfg.results){
       const val = votes[r.id] || 0;
@@ -177,16 +141,7 @@ function startQuiz(cfg){
     }
     const res = cfg.results.find(r => r.id === bestId) || cfg.results[0];
 
-    // инкремент счётчиков (общий и по персонажу)
-    const testKey = (qs.get('test') || 'unknown');
-    countHit(`${testKey}_total`);
-    countHit(`${testKey}_${res.id}`);
-
-    // (опционально: Я.Метрика)
-    track('result_view', { test:testKey, result_id: res.id, result_title: res.title||'' });
-
-    const appEl = $('#app');
-    appEl.innerHTML = '';
+    app.innerHTML = '';
 
     // заранее посчитаем данные для "Поделиться"
     function sharePageUrlFor(resId){
@@ -199,13 +154,7 @@ function startQuiz(cfg){
 
     // --- Карточка результата (без "Поделиться") ---
     const card = h('section', { class:'result' },
-      res.imagePortrait16x9 ? h('img', {
-        class:'rimg',
-        src: res.imagePortrait16x9,
-        alt: res.title,
-        // анти-кроп инлайн (на случай кэша в WebView)
-        style: 'object-fit:contain;height:auto;aspect-ratio:auto;max-height:78vh;background:#061f2c;border-radius:12px'
-      }) : null,
+      res.imagePortrait16x9 ? h('img', { class:'rimg', src: res.imagePortrait16x9, alt: res.title }) : null,
       h('div', { class:'pad' },
         h('h3', {}, res.title || 'Результат'),
         res.desc ? h('p', {}, h('em', {}, res.desc)) : null,
@@ -223,10 +172,7 @@ function startQuiz(cfg){
                   href:s.url,
                   target:'_blank',
                   rel:'noopener noreferrer',
-                  title:s.label,
-                  onclick: () => track('click_store', {
-                    test:testKey, result_id: res.id, brand: s.brand || s.label || ''
-                  })
+                  title:s.label
                 },
                 brandIcon(s.brand),
                 h('span', {}, s.label)
@@ -236,7 +182,7 @@ function startQuiz(cfg){
         ) : null
       )
     );
-    appEl.append(card);
+    app.append(card);
 
     // --- ОТДЕЛЬНАЯ секция "Поделиться" ПОД карточкой результата ---
     const shareSection = h('section', { class:'share gframe narrow' },
@@ -245,31 +191,26 @@ function startQuiz(cfg){
         h('a', {
           class:'share-link',
           href:`https://t.me/share/url?url=${encodeURIComponent(sharePage)}&text=${encodeURIComponent(shareText)}`,
-          target:'_blank', rel:'noopener noreferrer',
-          onclick: () => track('share', { test:testKey, result_id: res.id, network: 'telegram' })
+          target:'_blank', rel:'noopener noreferrer'
         }, 'Telegram'),
         h('a', {
           class:'share-link',
           href:`https://vk.com/share.php?url=${encodeURIComponent(sharePage)}&title=${encodeURIComponent(res.title)}`,
-          target:'_blank', rel:'noopener noreferrer',
-          onclick: () => track('share', { test:testKey, result_id: res.id, network: 'vk' })
+          target:'_blank', rel:'noopener noreferrer'
         }, 'ВКонтакте'),
         h('a', {
           class:'share-link',
           href:`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePage)}`,
-          target:'_blank', rel:'noopener noreferrer',
-          onclick: () => track('share', { test:testKey, result_id: res.id, network: 'x' })
+          target:'_blank', rel:'noopener noreferrer'
         }, 'X (Twitter)')
       )
     );
-    appEl.append(shareSection);
+    app.append(shareSection);
   }
 
-  // показываем первый вопрос
   renderQuestion();
 }
 
-// ===== стартовая страница теста + счётчики =====
 async function initTest(){
   const app = $('#app');
   const slug = qs.get('test');
@@ -279,10 +220,6 @@ async function initTest(){
     applyTheme(cfg.theme);
 
     app.innerHTML = '';
-
-    // место под строку статистики
-    const infoCounts = h('div', { class:'small muted', id:'stats-line' }, '');
-
     const start = h('section', { class:'cover' },
       cfg.coverFull ? h('img', { class:'img', src: cfg.coverFull, alt: cfg.title }) : null,
       h('div', { class:'pad' },
@@ -292,28 +229,10 @@ async function initTest(){
           h('button', { class:'btn', onclick: ()=> startQuiz(cfg) }, 'Начать'),
           h('a', { class:'btn secondary', href:'index.html' }, 'Назад')
         ),
-        h('div', { class:'small muted' }, 'Результат покажем только в конце'),
-        infoCounts
+        h('div', { class:'small muted' }, 'Результат покажем только в конце')
       )
     );
     app.append(start);
-
-    // Запрашиваем текущие значения счётчиков и выводим
-    (async ()=>{
-      const total = await countGet(`${slug}_total`);
-      const [A,B,C,D,E] = await Promise.all([
-        countGet(`${slug}_A`), // Юрис
-        countGet(`${slug}_B`), // Лара
-        countGet(`${slug}_C`), // Файдз
-        countGet(`${slug}_D`), // Пако
-        countGet(`${slug}_E`)  // Раттана
-      ]);
-      const n = (x)=> (typeof x==='number' ? x : 0);
-      infoCounts.textContent =
-        `Тест прошли: ${n(total)} раз. ` +
-        `Из них: Юрис ${n(A)}, Лара ${n(B)}, Файдз ${n(C)}, Раттана ${n(E)}, Пако ${n(D)}.`;
-    })().catch(()=>{ infoCounts.style.display='none'; });
-
   }catch(e){
     app.innerHTML = '<p>Не удалось загрузить тест. Проверь ссылку и файл JSON.</p>';
     console.error(e);
